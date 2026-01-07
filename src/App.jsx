@@ -44,7 +44,6 @@ function App() {
       //取得token帶入header
       axios.defaults.headers.common["Authorization"] = token;
       const res = await axios.post(`${API_BASE}/api/user/check`);
-      console.log(res.data);
     } catch (error) {
       console.log(error.response?.data.message);
     }
