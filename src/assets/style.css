@@ -3,6 +3,7 @@ body {
   height: 100%;
   text-align: center;
   font-family: "Roboto", "Microsoft JhengHei", "微軟正黑體", sans-serif;
+  background-color: rgb(253, 196, 122);
 }
 
 .login {
@@ -38,7 +39,7 @@ img {
   background-color: #f7ece3;
 }
 .dark-coffee-text {
-  color: peru;
+  color: rgb(147, 81, 15);
 }
 .dark-coffee-bg {
   background-color: peru;

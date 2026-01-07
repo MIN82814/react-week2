@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "./assets/style.css";
 
@@ -34,20 +34,43 @@ function App() {
       setIsAuth(false);
     }
   };
-  const checkLogin = async () => {
-    try {
-      //取得cookie
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("minToken="))
-        ?.split("=")[1];
-      //取得token帶入header
-      axios.defaults.headers.common["Authorization"] = token;
-      const res = await axios.post(`${API_BASE}/api/user/check`);
-    } catch (error) {
-      console.log(error.response?.data.message);
-    }
-  };
+  // const checkLogin = async () => {
+  //   try {
+  //     //取得cookie
+  //     const token = document.cookie
+  //       .split("; ")
+  //       .find((row) => row.startsWith("minToken="))
+  //       ?.split("=")[1];
+  //     //取得token帶入header
+  //     axios.defaults.headers.common["Authorization"] = token;
+  //     const res = await axios.post(`${API_BASE}/api/user/check`);
+  //   } catch (error) {
+  //     console.log(error.response?.data.message);
+  //   }
+  // };
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        //取得cookie
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("minToken="))
+          ?.split("=")[1];
+        //判斷是否有token
+        if (!token) return;
+
+        //取得token帶入header
+        axios.defaults.headers.common["Authorization"] = token;
+        const res = await axios.post(`${API_BASE}/api/user/check`);
+        setIsAuth(true);
+        getProducts();
+      } catch (error) {
+        console.log(error.response?.data.message);
+        setIsAuth(false);
+      }
+    };
+    checkLogin();
+  }, []);
   const getProducts = async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/${API_PATH}/admin/products`);
@@ -90,37 +113,30 @@ function App() {
           </form>
         </div>
       ) : (
-        <div className="container mt-2">
+        <div className="container mt-4">
           <div className="row">
             <div className="col-md-6">
-              <button
-                className="btn btn-info mb-5"
-                type="button"
-                onClick={checkLogin}
-              >
-                確認是否登入
-              </button>
-              <h2>產品列表</h2>
-              <table className="table">
+              <h2 className="fw-bold dark-coffee-text mb-3">產品列表</h2>
+              <table className="table table-hover table-dark table-striped table-borderless">
                 <thead>
                   <tr>
-                    <th>產品名稱</th>
+                    <th> 產品名稱</th>
                     <th>原價</th>
                     <th>售價</th>
                     <th>是否啟用</th>
                     <th>查看細節</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="align-middle">
                   {products.map((item) => (
                     <tr key={item.id}>
-                      <td>{item.title}</td>
+                      <td className="py-3">{item.title}</td>
                       <td>{item.origin_price}</td>
                       <td>{item.price}</td>
                       <td>{item.is_enabled ? "啟用" : "未啟用"}</td>
                       <td>
                         <button
-                          className="btn btn-primary"
+                          className="btn btn-warning"
                           onClick={() => {
                             setTempProduct(item);
                           }}
@@ -134,7 +150,7 @@ function App() {
               </table>
             </div>
             <div className="col-md-6">
-              <h2 className="fw-bold dark-coffee-text">單一產品細節</h2>
+              <h2 className="fw-bold dark-coffee-text mb-3">單一產品細節</h2>
               {tempProduct ? (
                 <div className="card mb-3 p-4 border-0 light-coffee-bg rounded-3 shadow-sm">
                   <div className="text-center">
@@ -145,7 +161,7 @@ function App() {
                     />
                   </div>
                   <div className="card-body text-start">
-                    <h5 className="card-title">
+                    <h5 className="card-title fw-bold">
                       {tempProduct.title}
                       <span className="badge dark-coffee-bg ms-2">
                         {tempProduct.category}
@@ -161,7 +177,7 @@ function App() {
                       </p>
                       元 / {tempProduct.price} 元
                     </div>
-                    <h5 className="mt-3">更多圖片：</h5>
+                    <h5 className="mt-5 fs-6 dark-coffee-text">更多圖片：</h5>
                     <div className="d-flex flex-wrap">
                       {tempProduct.imagesUrl
                         .filter((url) => url && url.trim() !== "")
